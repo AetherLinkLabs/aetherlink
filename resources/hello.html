@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World</title>
+    <style>
+        :root {
+            --primary-color: #2196f3;
+            --gradient-start: #ff6b6b;
+            --gradient-end: #4ecdc4;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        .greeting {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #fff, #e0f7fa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .action-btn {
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="greeting">Hello, World! 🌍</h1>
+    <button class="action-btn" onclick="showMessage()">点击交互</button>
+
+    <script>
+        function showMessage() {
+            const messages = [
+                "hello",
+                "world",
+                "hello, world",
+            ];
+            alert(messages[Math.floor(Math.random() * messages.length)]); 
+        }
+
+        let counter = 0;
+        const originalTitle = document.title; 
+        setInterval(() => {
+            document.title  = originalTitle + ' '.repeat(counter % 4);
+            counter++;
+        }, 500);
+    </script>
+</body>
+</html>
