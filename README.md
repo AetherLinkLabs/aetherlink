@@ -40,24 +40,50 @@ The AetherLink Protocol addresses these issues in the following ways:
 
 ---
 
-# aetherlink
+## **Getting Started**
 
-1. Call `registerName` to bind the name with the user address
-```
+### **Prerequisites**
+- Go version > 1.22
+- Git
+
+### **Installation**
+1. Clone the repository and navigate to the project directory:
+  ```sh
+  git clone https://github.com/AetherLinkLabs/aetherlink.git && cd aetherlink
+  ```
+
+2. Compile the project:
+  ```sh
+  make
+  ```
+
+3. Set up environment variables:
+  ```sh
+  cp .env.sample .env
+  ```
+  Replace the placeholders in the `.env` file with your actual keys:
+  ```
+  TAURUS_API_TOKEN=<YOUR_TAURUS_API_TOKEN>
+  TAURUS_PRIVATE_KEY=<YOUR_TAURUS_PRIVATE_KEY>
+  ```
+
+### **Usage**
+
+#### **Register a Name**
+Bind a name with the user address:
+```sh
 ./dist/aether contract register --name xuanwu
 ```
 
-2. Call `registerFileCID` to bind the file name and CID `baxxxxx`
-```
-./dist/aether contract bind --cid baxxxxx --name hello.html
-```
-
-3. Call `getFileCID` to query the file CID by specifying the file name
-```
-./dist/aether contract resolve --name hello.html --address 0xXXXXXXXX
-```
-
-4. Upload the file
-```
+#### **Upload a File**
+Upload a file to the decentralized storage:
+```sh
 ./dist/aether upload --path ./resources/hello.html --filename hello.html
+```
+You will receive a CID, for example, `baxxxxx`.
+
+#### **Bind File Name and CID**
+Bind the file name with the received CID:
+```sh
+./dist/aether contract bind --cid baxxxxx --name hello.html
 ```
