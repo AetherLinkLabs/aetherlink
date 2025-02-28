@@ -14,7 +14,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v3"
 
-	"github.com/aetherlink/autodrive/contract"
+	"github.com/aetherlink/aetherlink/contract"
 )
 
 var contractCmd = &cli.Command{

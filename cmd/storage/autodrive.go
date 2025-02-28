@@ -7,7 +7,7 @@ import (
 
 	"github.com/urfave/cli/v3"
 
-	"github.com/aetherlink/autodrive/autodrive"
+	"github.com/aetherlink/aetherlink/autodrive"
 )
 
 var uploadCmd = &cli.Command{
