@@ -54,7 +54,7 @@ The AetherLink Protocol addresses these issues in the following ways:
 
 2. Compile the project:
   ```sh
-  make
+  make storage
   ```
 
 3. Set up environment variables:
@@ -72,18 +72,18 @@ The AetherLink Protocol addresses these issues in the following ways:
 #### **Register a Name**
 Bind a name with the user address:
 ```sh
-./dist/aether contract register --name xuanwu
+./dist/storage contract register --name xuanwu
 ```
 
 #### **Upload a File**
 Upload a file to the decentralized storage:
 ```sh
-./dist/aether upload --path ./resources/hello.html --filename hello.html
+./dist/storage upload --path ./resources/hello.html --filename hello.html
 ```
 You will receive a CID, for example, `baxxxxx`.
 
 #### **Bind File Name and CID**
 Bind the file name with the received CID:
 ```sh
-./dist/aether contract bind --cid baxxxxx --name hello.html
+./dist/storage contract bind --cid baxxxxx --name hello.html
 ```
