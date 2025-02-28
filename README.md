@@ -1,42 +1,61 @@
-# AetherLink Protocol - Universal Decentralized Content Access
+## **AetherLink Protocol - Universal Decentralized Content Access**
 
 ---
 
-## **Overview**  
-The **AetherLink Protocol** (based on the `ai3://` protocol) is a decentralized content access standard designed to enable seamless access to content stored on any decentralized network (e.g. Autonomys, IPFS, Arweave, Filecoin) using a unified URL format. By binding user identities to content identifiers (CIDs) in smart contracts, AetherLink enables direct addressing of decentralized content without relying on centralized servers or complex tools.
+### **Overview**  
+The **AetherLink Protocol** (based on the `ai3://` protocol) is a decentralized content access standard designed to enable seamless content discovery and retrieval from decentralized networks. Initially, it focuses on integrating with the **Autonomys** network, leveraging a unified URL format that binds user identities to content identifiers (CIDs) through smart contracts. While the protocol currently prioritizes Autonomys compatibility, it is architected for future expansion to support multiple decentralized storage networks, positioning itself as a universal access standard.
 
-`ai3-gateway` is a temporary compatibility layer that converts `ai3://` URLs to `https://` links, ensuring compatibility with current browser ecosystems. In the future, as the protocol standardizes, native parsers (such as browser extensions or protocol handlers) will gradually replace the core role of the gateway.
-
----
-
-## **Problems Solved**  
-Current decentralized content access faces the following issues:  
-1. **High Technical Barriers**: Users must understand blockchain tools (e.g., wallets, CID generators) to access content.  
-2. **Protocol Fragmentation**: Different storage networks (Autonomys, Filecoin, Arweave, etc.) use independent addressing methods, lacking a unified entry point.  
-3. **Identity and Content Disconnection**: Blockchain addresses are hard to remember and cannot be directly mapped to user-friendly names and file hierarchies.
-
-The AetherLink Protocol addresses these issues in the following ways:  
-- **Unified URL Standard**: The `ai3://<name>/<path>` format is compatible with all decentralized storage networks.  
-- **Lightweight On-Chain Registration**: Smart contracts only manage name resolution and metadata mapping (e.g., storage type + CID), while the content itself remains fully decentralized.  
-- **Progressive Decentralization**: A temporary gateway provides transitional support, ultimately aiming for native browser integration of the `ai3://` protocol.
+The `ai3-gateway` acts as a temporary compatibility layer that converts `ai3://<name>/<path>` URLs into network-specific links. For example, a URL like `ai3://alice.research/file1` would be converted to `http://alice.research.gateway.com/file1`, ensuring compatibility with existing browser ecosystems. As the protocol matures, native parsers will gradually replace the gateway, enabling direct support for `ai3://` URLs in browsers.
 
 ---
 
-## **Goals**  
-1. **Be the HTTP for Decentralized Content**: Define a universal protocol standard that covers multi-chain and multi-storage network content addressing.  
-2. **Lower the User Barrier**: Provide a Web2-like URL experience, allowing non-technical users to easily access decentralized content.  
-3. **Full Compatibility with Existing Ecosystem**: Support flexible resolution of content from IPFS CIDs to Arweave transaction IDs without requiring changes to existing storage infrastructure.
+### **Problems Solved**  
+The AetherLink Protocol addresses several critical challenges in decentralized content access:
+
+- **Technical Complexity**: Eliminates the need for blockchain tool expertise by providing an intuitive URL-based access model.
+- **Network-Specific Silos**: Initially focuses on resolving Autonomys content discoverability, while laying the foundation for seamless multi-network interoperability.
+- **Identity-Content Gap**: Resolves the challenge of mapping cryptographic blockchain addresses to human-readable names, facilitating user-friendly content navigation and file hierarchies.
 
 ---
 
-## **Core Features**  
-- **Decentralized Identity Binding**  
-  Users can bind a human-readable name (e.g., `alice`) to their address, supporting cross-chain identity aggregation (with future expansion).  
-- **Multi-Network Storage Compatibility**  
-  Files can be uploaded to any decentralized storage (e.g., Autonomys, IPFS, Arweave, Storj), with the contract only recording the storage type and CID/path.  
-- **Native Protocol Parsing**  
-  The `ai3://` URL directly maps to the target content, eliminating the need for an intermediary gateway (long-term goal).  
-  Later, this can be extended to `web3://` to support multiple decentralized networks.
+### **Evolution Roadmap**  
+
+- **Phase 1 - Autonomys Foundation**  
+  - Exclusive support for Autonomys network storage  
+  - Basic name/CID binding contracts  
+  - Gateway-based HTTPS conversion for browser compatibility  
+
+- **Phase 2 - Multi-Network Expansion**  
+  - Modular adapters to support IPFS, Arweave, Filecoin  
+  - Cross-network redundancy system for enhanced reliability  
+  - Storage-agnostic CID resolution  
+
+- **Phase 3 - Protocol Standardization**  
+  - Native browser integration for `ai3://` URLs  
+  - Decentralized gateway network for better protocol distribution  
+  - ENS-like advanced contract system for more flexible asset management  
+
+---
+
+### **Core Features**  
+
+#### **Current Implementation**  
+
+- **Autonomys-First Storage**  
+  - Dedicated integration with Autonomys network infrastructure for content storage and retrieval  
+- **Identity Anchoring**  
+  - Bind human-readable names (e.g., `alice.research`) to CIDs on Autonomys, improving usability  
+- **Gateway Transition**  
+  - Temporary HTTPS conversion layer ensures compatibility with existing browsers while the protocol is evolving  
+
+#### **Future Vision**  
+
+- **Universal Storage Abstraction**  
+  - A unified interface for accessing content across networks such as Autonomys, IPFS, Arweave, and Storj  
+- **Cross-Network Resolution**  
+  - A single URL format resolving content from multiple decentralized storage backends  
+- **Content Portability**  
+  - Seamless migration of content between supported storage networks  
 
 ---
 
