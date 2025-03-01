@@ -45,6 +45,8 @@ The AetherLink Protocol addresses several critical challenges in decentralized c
   - Dedicated integration with Autonomys network infrastructure for content storage and retrieval  
 - **Identity Anchoring**  
   - Bind human-readable names (e.g., `alice.research`) to CIDs on Autonomys, improving usability  
+- **Name-to-Addr Resolution**  
+  - Maps human-readable names to their corresponding `Addr` , allowing for convenient identity-based interactions. (A MetaMask Snap submitting, soon you'll be able to send transactions or messages by name directly from MetaMask, check out [ANS-Snap](https://github.com/AetherLinkLabs/ans-mmsnap) for more details.)
 - **Gateway Transition**  
   - Temporary HTTPS conversion layer ensures compatibility with existing browsers while the protocol is evolving  
 
