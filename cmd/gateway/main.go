@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v3"
@@ -30,8 +30,8 @@ func main() {
 			},
 			&cli.StringFlag{
 				Name:  "auto-evm-url",
-				Value: "https://auto-evm.taurus.autonomys.xyz/ws",
-				Usage: "Ethereum RPC URL",
+				Value: "wss://auto-evm.taurus.autonomys.xyz/ws",
+				Usage: "Ethereum Web socket RPC URL",
 			},
 			&cli.StringFlag{
 				Name:    "contract-address",
@@ -44,12 +44,17 @@ func main() {
 				Value: 8081,
 				Usage: "Port to listen on",
 			},
+			&cli.StringFlag{
+				Name:     "db-path",
+				Usage:    "Path to the SQLite database",
+				Required: true,
+			},
 		},
 		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
 			if err := godotenv.Load(); err != nil {
 				return nil, errors.Wrapf(err, "failed to load .env file")
 			}
-			fmt.Println("TAURUS_API_TOKEN:", os.Getenv("TAURUS_API_TOKEN"))
+
 			return nil, nil
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
@@ -58,13 +63,15 @@ func main() {
 				autoDriveToken = os.Getenv("TAURUS_API_TOKEN")
 			}
 
+			contractAddr := common.HexToAddress(cmd.String("contract-address"))
 			server, err := gateway.NewServer(
 				ctx,
 				cmd.Uint("port"),
-				cmd.String("contract-address"),
+				contractAddr,
 				cmd.String("auto-evm-url"),
 				cmd.String("auto-drive-url"),
 				autoDriveToken,
+				cmd.String("db-path"),
 			)
 			if err != nil {
 				return errors.Wrap(err, "failed to create server")

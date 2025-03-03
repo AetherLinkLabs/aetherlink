@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log/slog"
 	"net/url"
@@ -21,15 +22,17 @@ type Server struct {
 	engine     *gin.Engine
 	contract   *contract.AETHER
 	autoClient *autodrive.Client
+	db         *sql.DB
 }
 
 func NewServer(
 	ctx context.Context,
 	port uint64,
-	contractAddressStr string,
+	contractAddr common.Address,
 	autoEvmUrl string,
 	autoDriveURL string,
 	token string,
+	dbPath string,
 ) (*Server, error) {
 	client := autodrive.NewClient(ctx, autoDriveURL, token)
 
@@ -38,18 +41,25 @@ func NewServer(
 		return nil, err
 	}
 
-	contractAddress := common.HexToAddress(contractAddressStr)
-	contract, err := contract.NewAETHER(contractAddress, ethClient)
+	aetherContract, err := contract.NewAETHER(contractAddr, ethClient)
 	if err != nil {
 		return nil, err
 	}
+
+	db, err := initDB(dbPath)
+	if err != nil {
+		return nil, err
+	}
+
+	go NewEventListener(db, aetherContract).Run()
 
 	return &Server{
 		ctx:        ctx,
 		port:       port,
 		engine:     gin.Default(),
-		contract:   contract,
+		contract:   aetherContract,
 		autoClient: client,
+		db:         db,
 	}, nil
 }
 
@@ -75,11 +85,20 @@ func (s *Server) init() {
 		c.Next()
 	})
 
-	s.engine.GET("/", func(c *gin.Context) {
-		c.String(200, "AetherLink Gateway")
+	s.engine.GET("/ping", func(c *gin.Context) {
+		c.String(200, "pong")
 	})
 
 	s.engine.GET("/:filename", s.rootHandler)
+	s.engine.GET("/files", func(ctx *gin.Context) {
+		files, err := s.files()
+		if err != nil {
+			ctx.String(500, "Error getting files")
+			return
+		}
+
+		ctx.JSON(200, files)
+	})
 }
 
 // https://<subdomain>.autonomys.site/<filename>
@@ -164,4 +183,32 @@ func extractSubdomain(host string) (string, error) {
 	// Join all parts before the domain (second to last part) and TLD
 	subdomain := strings.Join(parts[:len(parts)-2], ".")
 	return subdomain, nil
+}
+
+type FileMetaData struct {
+	FileName string `json:"filename"`
+	UserName string `json:"username"`
+}
+
+func (s *Server) files() ([]*FileMetaData, error) {
+	rows, err := s.db.Query("SELECT useraddress, username, cid, filename FROM users LIMIT 10")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var files []*FileMetaData
+	for rows.Next() {
+		var userAddress, userName, cid, fileName string
+		if err := rows.Scan(&userAddress, &userName, &cid, &fileName); err != nil {
+			return nil, err
+		}
+
+		files = append(files, &FileMetaData{
+			FileName: fileName,
+			UserName: userName,
+		})
+	}
+
+	return files, nil
 }
