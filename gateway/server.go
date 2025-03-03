@@ -54,7 +54,7 @@ func NewServer(
 }
 
 func (s *Server) Start() error {
-	s.registerRoutes()
+	s.init()
 	if err := s.engine.Run(fmt.Sprintf(":%d", s.port)); err != nil {
 		return err
 	}
@@ -62,7 +62,19 @@ func (s *Server) Start() error {
 	return nil
 }
 
-func (s *Server) registerRoutes() {
+func (s *Server) init() {
+	// CORS middleware
+	s.engine.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
+
 	s.engine.GET("/", func(c *gin.Context) {
 		c.String(200, "AetherLink Gateway")
 	})
