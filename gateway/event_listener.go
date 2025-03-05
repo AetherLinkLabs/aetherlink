@@ -23,27 +23,25 @@ func NewEventListener(db *sql.DB, aetherContract *contract.AETHER) *EventListene
 }
 
 func (e *EventListener) Run() {
-	go func() {
-		sink := make(chan *contract.AETHERFileCIDRegistered)
-		sub, err := e.aetherContract.WatchFileCIDRegistered(nil, sink, nil)
-		if err != nil {
+	sink := make(chan *contract.AETHERFileCIDRegistered)
+	sub, err := e.aetherContract.WatchFileCIDRegistered(nil, sink, nil)
+	if err != nil {
+		slog.Error("Error watching events", "error", err)
+	}
+
+	slog.Info("Subscribed to events")
+
+	for {
+		select {
+		case event := <-sink:
+			if err := e.handleEvent(event); err != nil {
+				slog.Error("Error handling event", "error", err)
+			}
+
+		case err := <-sub.Err():
 			slog.Error("Error watching events", "error", err)
 		}
-
-		slog.Info("Subscribed to events")
-
-		for {
-			select {
-			case event := <-sink:
-				if err := e.handleEvent(event); err != nil {
-					slog.Error("Error handling event", "error", err)
-				}
-
-			case err := <-sub.Err():
-				slog.Error("Error watching events", "error", err)
-			}
-		}
-	}()
+	}
 }
 
 func (e *EventListener) handleEvent(event *contract.AETHERFileCIDRegistered) error {
