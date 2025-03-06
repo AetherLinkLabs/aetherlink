@@ -9,9 +9,11 @@
         :root {
             --primary-color: #2A4365;
             --secondary-color: #3182CE;
-            --background: #E3F2FD;
+            --accent-color: #4299E1;
+            --background: #F7FAFC;
             --text-dark: #2D3748;
             --text-light: #718096;
+            --card-bg: #FFFFFF;
         }
 
         * {
@@ -36,21 +38,29 @@
         nav {
             background: var(--primary-color);
             padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        nav .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: white;
         }
 
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
+            color: white;
+            text-decoration: none;
         }
 
         .nav-links {
             display: flex;
-            gap: 1rem;
+            gap: 2rem;
         }
 
         .nav-links a {
@@ -58,61 +68,181 @@
             text-decoration: none;
             font-size: 1rem;
             transition: color 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
         }
 
         .nav-links a:hover {
-            color: var(--secondary-color);
+            background: var(--secondary-color);
         }
 
         .hero {
             text-align: center;
-            padding: 4rem 0;
+            padding: 8rem 0 4rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            margin-bottom: 4rem;
         }
 
         .hero h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .protocol-example {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem auto;
+            max-width: 700px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .protocol-example::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+            z-index: 0;
+        }
+
+        .protocol-example-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .protocol-example i {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .protocol-example-title {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .protocol-example code {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.8rem 1.2rem;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            display: inline-block;
+            margin: 0.5rem 0;
+            color: #E2E8F0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .protocol-example code:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .protocol-arrow {
+            font-size: 0.8rem;
+            margin: 0.3rem 0;
+            color: rgba(255, 255, 255, 0.9);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
             margin-bottom: 1rem;
             color: var(--primary-color);
         }
 
-        .protocol-example {
-            background: white;
-            padding: 1.5rem;
+        .roadmap {
+            background: var(--card-bg);
+            padding: 2rem;
             border-radius: 8px;
-            margin: 2rem 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin: 4rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
-        .file-list {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin: 2rem 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        .roadmap h2 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            text-align: center;
         }
 
-        .file-list table {
-            width: 100%;
-            border-collapse: collapse;
+        .phase {
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+            position: relative;
         }
 
-        .file-list th, .file-list td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
+        .phase::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--accent-color);
         }
 
-        .file-list th {
-            background: var(--secondary-color);
-            color: white;
+        .phase h3 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
         }
 
         footer {
             background: var(--primary-color);
             color: white;
             text-align: center;
-            padding: 2rem;
+            padding: 3rem;
             margin-top: 4rem;
+        }
+
+        .footer-links {
+            margin-top: 1rem;
         }
 
         .footer-links a {
@@ -120,22 +250,83 @@
             text-decoration: none;
             margin: 0 10px;
             transition: color 0.3s;
+            font-size: 1.2rem;
         }
 
         .footer-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .file-list {
+            background: var(--card-bg);
+            padding: 1.8rem;
+            border-radius: 8px;
+            margin: 3rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .file-list h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+            text-align: left;
+        }
+
+        .file-list ul {
+            list-style: none;
+            padding: 0;
+            max-width: 700px;
+        }
+
+        .file-list li {
+            margin: 0.7rem 0;
+            padding: 0.7rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            background: var(--background);
+        }
+
+        .file-list li:hover {
+            transform: translateX(3px);
+            background: var(--background);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .file-list a {
+            color: var(--text-dark);
+            text-decoration: none;
+            display: block;
+            font-size: 1rem;
+        }
+
+        .file-list li:hover a {
             color: var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <nav>
         <div class="container">
-            <span class="logo">AetherLink Protocol</span>
+            <a href="#" class="logo">AetherLink Protocol</a>
             <div class="nav-links">
-                <a href="#">Home</a>
-                <a href="#overview">Overview</a>
+                <a href="#features">Features</a>
+                <a href="#roadmap">Roadmap</a>
+                <a href="https://github.com/AetherLinkLabs/aetherlink" target="_blank">GitHub</a>
                 <a href="#demo">Demo</a>
-                <a href="#architecture">Architecture</a>
             </div>
         </div>
     </nav>
@@ -143,35 +334,82 @@
     <div class="hero">
         <div class="container">
             <h1>Universal Decentralized Content Access</h1>
-            <p class="protocol-example">
-                <i class="fas fa-link"></i> Protocol example: 
-                <code>ai3://alice.research/file1</code> → 
-                <code>http://alice.research.gateway.com/file1</code>
-            </p>
+            <p>A revolutionary protocol designed to enable seamless content discovery and retrieval from decentralized networks</p>
+            <div class="protocol-example">
+                <div class="protocol-example-content">
+                    <div class="protocol-example-title">
+                        <i class="fas fa-link"></i> Protocol Example
+                    </div>
+                    <code>ai3://alice.research/file1</code>
+                    <div class="protocol-arrow">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <code>http://alice.research.gateway.com/file1</code>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="container">
-        <div class="file-list">
-            <h2>Available Files</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>File Name</th>
-                        <th>Gateway Link</th>
-                    </tr>
-                </thead>
-                <tbody id="file-table-body">
-                </tbody>
-            </table>
-        </div>
+        <section id="features" class="features">
+            <div class="feature-card">
+                <i class="fas fa-code"></i>
+                <h3>Technical Simplicity</h3>
+                <p>Eliminates blockchain complexity with an intuitive URL-based access model that anyone can understand and use.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-network-wired"></i>
+                <h3>Network Integration</h3>
+                <p>Initially focused on Autonomys network with planned expansion to support IPFS, Arweave, and Filecoin.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-id-card"></i>
+                <h3>Identity Mapping</h3>
+                <p>Bridges the gap between cryptographic addresses and human-readable names for better user experience.</p>
+            </div>
+        </section>
+
+        <section id="roadmap" class="roadmap">
+            <h2>Evolution Roadmap</h2>
+            <div class="phase">
+                <h3>Phase 1 - Autonomys Foundation</h3>
+                <ul>
+                    <li>Exclusive support for Autonomys network storage</li>
+                    <li>Basic name/CID binding contracts</li>
+                    <li>Gateway-based HTTPS conversion</li>
+                </ul>
+            </div>
+            <div class="phase">
+                <h3>Phase 2 - Multi-Network Expansion</h3>
+                <ul>
+                    <li>Support for IPFS, Arweave, Filecoin</li>
+                    <li>Cross-network redundancy system</li>
+                    <li>Storage-agnostic CID resolution</li>
+                </ul>
+            </div>
+            <div class="phase">
+                <h3>Phase 3 - Protocol Standardization</h3>
+                <ul>
+                    <li>Native browser integration</li>
+                    <li>Decentralized gateway network</li>
+                    <li>Advanced contract system</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="demo" class="file-list">
+            <h2>Live Demo - Available Files</h2>
+            <ul id="file-table-body">
+            </ul>
+        </section>
     </div>
 
     <footer>
         <div class="container">
-            <p>© 2023 AetherLink Protocol. Open Source Initiative</p>
+            <p> 2024 AetherLink Protocol. Open Source Initiative</p>
             <div class="footer-links">
-                <a href="https://github.com/AetherLinkLabs/aetherlink" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                <a href="https://github.com/AetherLinkLabs/aetherlink" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://github.com/AetherLinkLabs/ans-mmsnap" target="_blank"><i class="fas fa-plug"></i></a>
             </div>
         </div>
     </footer>
@@ -182,23 +420,24 @@
                 const response = await fetch('http://www.autonomys.site/files');
                 const files = await response.json();
                 
-                const tableBody = document.getElementById('file-table-body');
-                tableBody.innerHTML = '';
+                const fileList = document.getElementById('file-table-body');
+                fileList.innerHTML = '';
                 
                 files.slice(0, 10).forEach(file => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${file.filename}</td>
-                        <td><a href="http://${file.username}.autonomys.site/${file.filename}" target="_blank">${file.filename}</a></td>
-                    `;
-                    tableBody.appendChild(row);
+                    const li = document.createElement('li');
+                    li.innerHTML = `<div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                        <span style="font-weight: bold;">${file.filename}</span>
+                        <a href="http://${file.username}.autonomys.site/${file.filename}" target="_blank" style="color: #3182CE; text-decoration: underline;">http://${file.username}.autonomys.site/${file.filename}</a>
+                    </div>`;
+                    fileList.appendChild(li);
                 });
             } catch (error) {
                 console.error('Error fetching files:', error);
             }
         }
 
-        fetchFiles();
+        // Fetch files when page loads
+        document.addEventListener('DOMContentLoaded', fetchFiles);
     </script>
 </body>
 </html>

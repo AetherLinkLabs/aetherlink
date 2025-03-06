@@ -1,5 +1,11 @@
 ## **AetherLink Protocol - Universal Decentralized Content Access**
 
+
+
+### **Quick Links**
+- 🌐 **Website**: [https://autonomys.site](https://autonomys.site)
+- 🔌 **MetaMask Snap**: [ANS-Snap](https://github.com/AetherLinkLabs/ans-mmsnap)
+
 ---
 
 ### **Overview**  
