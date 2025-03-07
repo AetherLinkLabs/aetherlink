@@ -417,7 +417,7 @@
     <script>
         async function fetchFiles() {
             try {
-                const response = await fetch('http://www.autonomys.site/files');
+                const response = await fetch('/files');
                 const files = await response.json();
                 
                 const fileList = document.getElementById('file-table-body');
@@ -427,7 +427,7 @@
                     const li = document.createElement('li');
                     li.innerHTML = `<div style="display: flex; justify-content: space-between; margin: 5px 0;">
                         <span style="font-weight: bold;">${file.filename}</span>
-                        <a href="http://${file.username}.autonomys.site/${file.filename}" target="_blank" style="color: #3182CE; text-decoration: underline;">http://${file.username}.autonomys.site/${file.filename}</a>
+                        <a href="https://${file.username}.autonomys.site/${file.filename}" target="_blank" style="color: #3182CE; text-decoration: underline;">http://${file.username}.autonomys.site/${file.filename}</a>
                     </div>`;
                     fileList.appendChild(li);
                 });
@@ -441,3 +441,5 @@
     </script>
 </body>
 </html>
+
+
