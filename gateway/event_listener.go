@@ -39,7 +39,9 @@ func (e *EventListener) Run() {
 			}
 
 		case err := <-sub.Err():
-			slog.Error("Error watching events", "error", err)
+			if err != nil {
+				slog.Error("Error watching events", "error", err)
+			}
 		}
 	}
 }
