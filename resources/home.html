@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AetherLink Protocol - Universal Decentralized Content Access</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
     <style>
         :root {
             --primary-color: #2A4365;
@@ -58,6 +59,12 @@
             text-decoration: none;
         }
 
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
         .nav-links {
             display: flex;
             gap: 2rem;
@@ -74,6 +81,93 @@
 
         .nav-links a:hover {
             background: var(--secondary-color);
+        }
+
+        .nav-wallet {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .wallet-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 0.5rem;
+            z-index: 1000;
+            min-width: 200px;
+        }
+
+        .wallet-dropdown.visible {
+            display: block;
+        }
+
+        .wallet-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .wallet-option:hover {
+            background-color: rgba(25, 182, 160, 0.1);
+        }
+
+        .wallet-option img {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .wallet-option span {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .wallet-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .wallet-option.disabled:hover {
+            background-color: transparent;
+        }
+
+        .nav-wallet .connect-button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .nav-wallet .connect-button:hover {
+            background: var(--secondary-color);
+        }
+
+        .nav-wallet .wallet-address {
+            display: none;
+            color: white;
+            font-family: monospace;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .nav-wallet .wallet-address.visible {
+            display: inline-block;
         }
 
         .hero {
@@ -305,6 +399,93 @@
             color: var(--secondary-color);
         }
 
+        .contract-interaction {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 4rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .contract-interaction h2 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+
+        .contract-group {
+            background: var(--background);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            transition: transform 0.3s;
+        }
+
+        .contract-group:hover {
+            transform: translateY(-5px);
+        }
+
+        .contract-group h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--text-light);
+            border-radius: 4px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-group button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .input-group button:hover {
+            background: var(--secondary-color);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .connect-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
@@ -324,11 +505,23 @@
     <nav>
         <div class="container">
             <a href="#" class="logo">AetherLink Protocol</a>
-            <div class="nav-links">
-                <a href="#features">Features</a>
-                <a href="#roadmap">Roadmap</a>
-                <a href="https://github.com/AetherLinkLabs/aetherlink" target="_blank">GitHub</a>
-                <a href="#demo">Demo</a>
+            <div class="nav-right">
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#roadmap">Roadmap</a>
+                    <a href="https://github.com/AetherLinkLabs/aetherlink" target="_blank">GitHub</a>
+                    <a href="#demo">Demo</a>
+                </div>
+                <div class="nav-wallet">
+                    <button id="connectWallet" class="connect-button">Connect Wallet</button>
+                    <span id="walletAddress" class="wallet-address"></span>
+                    <div id="walletDropdown" class="wallet-dropdown">
+                        <div class="wallet-option" onclick="connectSpecificWallet('metamask')">
+                            <img src="https://lh3.googleusercontent.com/EQpmNpyWc98Rhu0bDzuPPS8ivQN2xZoc-saVhYHm5394wqS6eCRI5KyQFtxQf1z-OgS5HYVxvnUX8iv3uWy5jM2maw=s120" alt="MetaMask">
+                            <span>MetaMask</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -353,6 +546,46 @@
     </div>
 
     <div class="container">
+
+        <section class="contract-interaction" id="contractInteraction" style="display: none;">
+            <div class="container">
+                <h2>Contract Interaction</h2>
+                <div class="contract-group">
+                    <h3>Your AetherLink Identity</h3>
+                    <div id="nameRegistrationStatus" style="display: none;">
+                        <p>Your registered name: <strong id="registeredUserName"></strong></p>
+                    </div>
+                    <div id="nameRegistrationForm">
+                        <div class="input-group">
+                            <label for="userName">Choose a username for your AetherLink identity:</label>
+                            <input type="text" id="userName" placeholder="Enter your username">
+                            <button onclick="registerName()" class="connect-button">Register Name</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="contract-group">
+                    <h3>Register Your File</h3>
+                    <div class="input-group">
+                        <label for="fileName">File Name:</label>
+                        <input type="text" id="fileName" placeholder="Enter file name">
+                        <label for="fileCID">IPFS Content ID (CID):</label>
+                        <input type="text" id="fileCID" placeholder="Enter file CID">
+                        <button onclick="registerFile()" class="connect-button">Register File</button>
+                    </div>
+                    
+                    <!-- u6dfbu52a0u52a0u8f7du5df2u6ce8u518cu6587u4ef6u7684u51fdu6570 -->
+                    <div class="registered-files" style="margin-top: 20px;">
+                        <h4>Your Registered Files</h4>
+                        <div id="fileListContainer" style="max-height: 300px; overflow-y: auto; background: rgba(0,0,0,0.1); border-radius: 5px; padding: 10px;">
+                            <ul id="registeredFiles" style="list-style-type: none; padding: 0;">
+                                <li style="text-align: center; padding: 10px;">Loading your files...</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
         <section id="features" class="features">
             <div class="feature-card">
                 <i class="fas fa-code"></i>
@@ -417,6 +650,391 @@
     </footer>
 
     <script>
+        const CONTRACT_ADDRESS = '0xbdF673bd60232917Ce960AD268a8bF6441CeFDdD';
+        const CONTRACT_ABI = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "fileName",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "cid",
+				"type": "string"
+			}
+		],
+		"name": "FileCIDRegistered",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "NameRegistered",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "fileName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "cid",
+				"type": "string"
+			}
+		],
+		"name": "registerFileCID",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "registerName",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "fileName",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "getFileCID",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "getUserAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "getUserName",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+        let web3;
+        let contract;
+        let userAccount;
+        let currentWallet = null;
+
+        // Network configurations with hex chainId as required by Ethereum JSON-RPC
+        const SUPPORTED_NETWORKS = {
+            '0x77a10': {  // Decimal: 490000
+                chainId: '0x77a10',  // Must be hex string starting with 0x
+                chainName: 'Autonomys Taurus Testnet',
+                nativeCurrency: {
+                    name: 'AI3',
+                    symbol: 'AI3',
+                    decimals: 18
+                },
+                rpcUrls: ['https://auto-evm.taurus.autonomys.xyz'],
+                blockExplorerUrls: ['https://auto-evm.taurus.autonomys.xyz'],
+            },
+        };
+
+        async function switchNetwork(chainId) {
+            try {
+                console.log('Switching to network:', chainId);
+                // chainId must be hex string for Ethereum JSON-RPC
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId }],
+                });
+                console.log('Successfully switched to network:', chainId);
+                return true;
+            } catch (switchError) {
+                // This error code indicates that the chain has not been added to MetaMask
+                if (switchError.code === 4902) {
+                    try {
+                        console.log('Network not found, adding network:', chainId);
+                        const network = SUPPORTED_NETWORKS[chainId];
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [network],
+                        });
+                        console.log('Successfully added network:', chainId);
+                        return true;
+                    } catch (addError) {
+                        console.error('Failed to add network:', chainId, addError);
+                        return false;
+                    }
+                }
+                console.error('Failed to switch network:', chainId, switchError);
+                return false;
+            }
+        }
+
+        async function connectWallet(provider) {
+            try {
+                // Request account access
+                const accounts = await provider.request({ method: 'eth_requestAccounts' });
+                userAccount = accounts[0];
+                console.log('Connected account:', userAccount);
+                
+                // Initialize Web3 with the appropriate provider
+                if (provider === window.ethereum) {
+                    web3 = new Web3(provider);
+                }
+
+                // Check network - getChainId returns decimal, convert to hex for Ethereum JSON-RPC
+                const chainId = await web3.eth.getChainId();
+                const chainIdHex = '0x' + chainId.toString(16);
+                console.log('Current chain ID:', chainId, 'Hex:', chainIdHex);
+                
+                if (!SUPPORTED_NETWORKS[chainIdHex]) {
+                    const networkNames = Object.values(SUPPORTED_NETWORKS).map(n => n.chainName).join(' or ');
+                    console.log('Unsupported network, available networks:', SUPPORTED_NETWORKS);
+                    alert(`Please switch to ${networkNames}!`);
+                    
+                    if (provider === window.ethereum) {
+                        const switched = await switchNetwork('0x77a10'); // Decimal: 490000
+                        if (!switched) {
+                            return;
+                        }
+                    }
+                }
+
+                // Initialize contract
+                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+
+                // Update UI
+                const walletAddressElement = document.getElementById('walletAddress');
+                walletAddressElement.textContent = shortenAddress(userAccount);
+                walletAddressElement.classList.add('visible');
+                document.getElementById('connectWallet').textContent = 'Connected';
+                document.getElementById('contractInteraction').style.display = 'block';
+
+                // Set up event listeners
+                if (provider === window.ethereum) {
+                    // Listen for account changes
+                    provider.on('accountsChanged', function (accounts) {
+                        if (accounts.length === 0) {
+                            disconnectWallet();
+                        } else {
+                            userAccount = accounts[0];
+                            const walletAddressElement = document.getElementById('walletAddress');
+                            walletAddressElement.textContent = shortenAddress(userAccount);
+                            walletAddressElement.classList.add('visible');
+                        }
+                    });
+
+                    // Listen for chain changes
+                    provider.on('chainChanged', function(chainId) {
+                        console.log('Chain changed:', chainId);
+                        // chainId from event is already in hex format
+                        if (!SUPPORTED_NETWORKS[chainId]) {
+                            const networkNames = Object.values(SUPPORTED_NETWORKS).map(n => n.chainName).join(' or ');
+                            alert(`Please switch to ${networkNames}!`);
+                            if (provider === window.ethereum) {
+                                switchNetwork('0x77a10'); // Decimal: 490000
+                            }
+                        }
+                        window.location.reload();
+                    });
+                }
+
+                // 检查用户名注册状态
+                await checkNameRegistration();
+
+                // u52a0u8f7du5df2u6ce8u518cu6587u4ef6
+                await loadRegisteredFiles();
+                
+                // 添加账户变更监听器
+                setupEventListeners();
+                
+                return true;
+            } catch (error) {
+                console.error('Wallet connection error:', error);
+                alert('Failed to connect wallet. Please try again.');
+                return false;
+            }
+        }
+
+        function disconnectWallet() {
+            userAccount = null;
+            currentWallet = null;
+            const walletAddressElement = document.getElementById('walletAddress');
+            walletAddressElement.textContent = '';
+            walletAddressElement.classList.remove('visible');
+            document.getElementById('connectWallet').textContent = 'Connect Wallet';
+            document.getElementById('contractInteraction').style.display = 'none';
+        }
+
+        async function registerName() {
+            const name = document.getElementById('userName').value;
+            
+            if (!name) {
+                alert('Please enter a username');
+                return;
+            }
+            
+            // 获取按钮引用并更新状态
+            const registerButton = document.querySelector('button[onclick="registerName()"]');
+            const originalButtonText = registerButton.innerHTML;
+            
+            try {
+                // 禁用按钮并显示加载状态
+                registerButton.disabled = true;
+                registerButton.innerHTML = `<span class="loading-spinner"></span>Registering...`;
+                
+                // 发送交易
+                await contract.methods.registerName(name).send({ from: userAccount });
+                
+                // 显示成功消息
+                alert('Username registered successfully!');
+                
+                // 检查注册状态
+                await checkNameRegistration();
+            } catch (error) {
+                console.error('Error registering name:', error);
+                alert('Error registering name. Please check console for details.');
+            } finally {
+                // 恢复按钮状态
+                registerButton.disabled = false;
+                registerButton.innerHTML = originalButtonText;
+            }
+        }
+
+        async function registerFile() {
+            const fileName = document.getElementById('fileName').value;
+            const fileCID = document.getElementById('fileCID').value;
+            
+            if (!fileName || !fileCID) {
+                alert('Please enter both file name and CID');
+                return;
+            }
+            
+            // 获取按钮引用并更新状态
+            const registerButton = document.querySelector('button[onclick="registerFile()"]');
+            const originalButtonText = registerButton.innerHTML;
+            
+            try {
+                // 禁用按钮并显示加载状态
+                registerButton.disabled = true;
+                registerButton.innerHTML = `<span class="loading-spinner"></span>Registering...`;
+                
+                // 发送交易
+                await contract.methods.registerFileCID(fileName, fileCID).send({ from: userAccount });
+                
+                // 清空输入框
+                document.getElementById('fileName').value = '';
+                document.getElementById('fileCID').value = '';
+                
+                // 显示成功消息
+                alert('File registered successfully!');
+                
+                // 刷新文件列表
+                await loadRegisteredFiles();
+            } catch (error) {
+                console.error('Error registering file:', error);
+                alert('Error registering file. Please check console for details.');
+            } finally {
+                // 恢复按钮状态
+                registerButton.disabled = false;
+                registerButton.innerHTML = originalButtonText;
+            }
+        }
+
+        function shortenAddress(address) {
+            return address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '';
+        }
+
+        // Add event listener for wallet connection
+        document.getElementById('connectWallet').addEventListener('click', toggleWalletDropdown);
+
+        // Initialize wallet detection
+        document.addEventListener('DOMContentLoaded', function() {
+            detectWallets();
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const dropdown = document.getElementById('walletDropdown');
+                const connectButton = document.getElementById('connectWallet');
+                if (!connectButton.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.remove('visible');
+                }
+            });
+        });
+
         async function fetchFiles() {
             try {
                 const response = await fetch('/files');
@@ -440,6 +1058,167 @@
 
         // Fetch files when page loads
         document.addEventListener('DOMContentLoaded', fetchFiles);
+
+        // Wallet detection and connection functions
+        function detectWallets() {
+            // 只保留 MetaMask 检测
+            const metamaskAvailable = typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask;
+            
+            const metamaskOption = document.getElementById('metamaskOption');
+            
+            if (!metamaskAvailable) {
+                metamaskOption.classList.add('disabled');
+                metamaskOption.onclick = () => {
+                    window.open('https://metamask.io/download/', '_blank');
+                };
+            }
+
+            return { metamaskAvailable };
+        }
+
+        function toggleWalletDropdown() {
+            const dropdown = document.getElementById('walletDropdown');
+            dropdown.classList.toggle('visible');
+        }
+
+        async function connectSpecificWallet(walletType) {
+            try {
+                let provider;
+                
+                if (walletType === 'metamask') {
+                    if (typeof window.ethereum === 'undefined') {
+                        throw new Error('请安装 MetaMask 扩展程序');
+                    }
+                    provider = window.ethereum;
+                    await connectWallet(provider);
+                    currentWallet = walletType;
+                    document.getElementById('walletDropdown').classList.remove('visible');
+                }
+            } catch (error) {
+                console.error('Wallet connection error:', error);
+                alert('Failed to connect wallet. Please try again.');
+            }
+        }
+
+        // 检查用户名注册状态
+        async function checkNameRegistration() {
+            if (!contract || !userAccount) return;
+            
+            try {
+                const name = await contract.methods.getUserName(userAccount).call();
+                if (name) {
+                    // 用户已注册名称，更新UI
+                    document.getElementById('registeredUserName').textContent = name;
+                    document.getElementById('nameRegistrationStatus').style.display = 'block';
+                    document.getElementById('nameRegistrationForm').style.display = 'none';
+                } else {
+                    // 用户未注册名称，显示注册表单
+                    document.getElementById('nameRegistrationStatus').style.display = 'none';
+                    document.getElementById('nameRegistrationForm').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error checking name registration:', error);
+            }
+        }
+
+        // u6dfbu52a0u52a0u8f7du5df2u6ce8u518cu6587u4ef6u7684u51fdu6570
+        async function loadRegisteredFiles() {
+            if (!contract || !userAccount) {
+                document.getElementById('registeredFiles').innerHTML = '<li style="text-align: center; padding: 10px;">Please connect your wallet first</li>';
+                return;
+            }
+            
+            try {
+                const fileList = document.getElementById('registeredFiles');
+                fileList.innerHTML = '<li style="text-align: center; padding: 10px;">Loading...</li>';
+                
+                // u83b7u53d6u7528u6237u540duff0cu7528u4e8eu6784u5efau94feu63a5
+                const username = await contract.methods.getUserName(userAccount).call();
+                const hasUsername = username && username.trim() !== '';
+                
+                const events = await contract.getPastEvents('FileCIDRegistered', {
+                    filter: {user: userAccount},
+                    fromBlock: 946610,
+                    toBlock: 'latest'
+                });
+                
+                if (events.length === 0) {
+                    fileList.innerHTML = '<li style="text-align: center; padding: 10px;">No files registered yet</li>';
+                    return;
+                }
+                
+                fileList.innerHTML = events
+                    .map(event => {
+                        const fileName = event.returnValues.fileName;
+                        const cid = event.returnValues.cid;
+                        const fileUrl = hasUsername ? `https://${username}.autonomys.site/${fileName}` : null;
+                        
+                        return `
+                            <li style="background: rgba(255,255,255,0.05); margin: 5px 0; padding: 10px; border-radius: 4px;">
+                                <div>
+                                    <strong>File:</strong> ${fileName}
+                                    ${fileUrl ? `<a href="${fileUrl}" target="_blank" style="margin-left: 10px; color: #26A69A; text-decoration: none;">
+                                        <span class="view-link">View File</span> <span style="font-size: 0.8em;">↗</span>
+                                    </a>` : ''}
+                                </div>
+                                <div style="word-break: break-all;"><strong>CID:</strong> ${cid}</div>
+                                ${!hasUsername ? `<div style="font-size: 0.8em; color: #ff9800; margin-top: 5px;">
+                                    Register a username to access your file via a custom URL
+                                </div>` : ''}
+                            </li>
+                        `;
+                    })
+                    .join('');
+                    
+            } catch (error) {
+                console.error('Error loading registered files:', error);
+                document.getElementById('registeredFiles').innerHTML = 
+                    '<li style="text-align: center; padding: 10px; color: #ff5252;">Error loading files. Please try again.</li>';
+            }
+        }
+
+        // 添加事件监听器设置函数
+        function setupEventListeners() {
+            // 移除可能存在的旧监听器，避免重复
+            ethereum.removeListener('accountsChanged', handleAccountsChanged);
+            ethereum.removeListener('chainChanged', handleChainChanged);
+            
+            // 添加新的监听器
+            ethereum.on('accountsChanged', handleAccountsChanged);
+            ethereum.on('chainChanged', handleChainChanged);
+            
+            console.log('MetaMask event listeners set up');
+        }
+
+        // 处理账户变更
+        async function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                // 用户断开了钱包连接
+                console.log('Please connect to MetaMask.');
+                document.getElementById('walletStatus').textContent = 'Disconnected';
+                document.getElementById('walletAddress').textContent = '';
+                document.getElementById('connectBtn').textContent = 'Connect Wallet';
+                document.getElementById('connectBtn').disabled = false;
+                return;
+            }
+            
+            console.log('Account changed to:', accounts[0]);
+            userAccount = accounts[0];
+            
+            // 更新UI显示
+            document.getElementById('walletAddress').textContent = shortenAddress(userAccount);
+            
+            // 刷新用户数据
+            await checkNameRegistration();
+            await loadRegisteredFiles();
+        }
+
+        // 处理链变更
+        async function handleChainChanged(chainId) {
+            console.log('Network changed to:', chainId);
+            // 页面刷新以确保所有状态都正确更新
+            window.location.reload();
+        }
     </script>
 </body>
 </html>

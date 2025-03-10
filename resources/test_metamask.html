@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MetaMask Contract Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <style>
+        :root {
+            --primary: #1976D2;
+            --background: #1A1A1A;
+            --surface: #2D2D2D;
+            --text: #FFFFFF;
+        }
+        body {
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+        }
+        .section {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        input {
+            padding: 0.5rem;
+            margin: 0.5rem;
+            width: 300px;
+            background: #333;
+            color: white;
+            border: 1px solid #444;
+        }
+        #txLog {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #222;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        #nameStatus {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        #fileList li {
+            padding: 0.5rem;
+            margin: 0.3rem 0;
+            background: #333;
+            border-radius: 4px;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <h2>MetaMask Connection</h2>
+        <button id="connectBtn">Connect Wallet</button>
+        <div id="walletInfo" style="display: none;">
+            <p>Address: <span id="address"></span></p>
+            <p>Network: <span id="network"></span></p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Contract Interactions</h2>
+        <div>
+            <input type="text" id="userName" placeholder="Enter username">
+            <button onclick="registerName()">Register Name</button>
+        </div>
+        <div>
+            <input type="text" id="fileName" placeholder="Enter filename">
+            <input type="text" id="fileCID" placeholder="Enter CID">
+            <button onclick="registerFile()">Register File</button>
+        </div>
+        <div>
+            <input type="text" id="queryName" placeholder="Enter name to lookup">
+            <button onclick="getNameAddress()">Lookup Address</button>
+            <div id="nameResult"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Registered Information</h2>
+        <div id="nameStatus">
+            <p>Registered Name: <span id="registeredName">-</span></p>
+            <button id="registerNameBtn" onclick="registerName()">Register Name</button>
+        </div>
+        <div id="fileList">
+            <h3>Registered Files</h3>
+            <ul id="fileItems"></ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Transaction Log</h2>
+        <div id="txLog"></div>
+    </div>
+
+    <script>
+        const CONTRACT_ADDRESS = '0xbdF673bd60232917Ce960AD268a8bF6441CeFDdD';
+        const ABI = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "fileName",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "cid",
+				"type": "string"
+			}
+		],
+		"name": "FileCIDRegistered",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "NameRegistered",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "fileName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "cid",
+				"type": "string"
+			}
+		],
+		"name": "registerFileCID",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "registerName",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "fileName",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "getFileCID",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "getUserAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "getUserName",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+        let web3;
+        let contract;
+        let userAccount;
+
+        async function init() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                try {
+                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                    userAccount = accounts[0];
+                    setupEventListeners();
+                    updateUI();
+                    initContract();
+                } catch (error) {
+                    logError(error);
+                }
+            } else {
+                alert('Please install MetaMask!');
+            }
+        }
+
+        function initContract() {
+            contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+        }
+
+        async function updateUI() {
+            const networkId = await web3.eth.net.getId();
+            document.getElementById('address').textContent = shortenAddress(userAccount);
+            document.getElementById('network').textContent = `Chain ID: ${networkId}`;
+            document.getElementById('walletInfo').style.display = 'block';
+            document.getElementById('connectBtn').textContent = 'Connected';
+            await checkRegistration();
+        }
+
+        async function registerName() {
+            const nameInput = document.getElementById('userName');
+            const name = nameInput.value;
+            if (!name) {
+                alert('Please enter a name');
+                return;
+            }
+
+            try {
+                const tx = await contract.methods.registerName(name).send({ from: userAccount });
+                document.getElementById('registeredName').textContent = name;
+                document.getElementById('registerNameBtn').disabled = true;
+                nameInput.value = '';
+                logTransaction(`Name registered: ${name}`);
+                await checkRegistration(); // Refresh file list
+            } catch (error) {
+                logError(error);
+            }
+        }
+
+        async function registerFile() {
+            const fileName = document.getElementById('fileName').value;
+            const cid = document.getElementById('fileCID').value;
+            try {
+                const tx = await contract.methods.registerFileCID(fileName, cid).send({ from: userAccount });
+                logTransaction(`File registered: ${fileName} (CID: ${cid})`);
+            } catch (error) {
+                logError(error);
+            }
+        }
+
+        async function getNameAddress() {
+            const name = document.getElementById('queryName').value;
+            try {
+                const address = await contract.methods.getUserAddress(name).call();
+                document.getElementById('nameResult').innerHTML = 
+                    `${name} → ${shortenAddress(address)}`;
+            } catch (error) {
+                logError(error);
+            }
+        }
+
+        async function checkRegistration() {
+            try {
+                const name = await contract.methods.getUserName(userAccount).call();
+                if (name) {
+                    document.getElementById('registeredName').textContent = name;
+                    document.getElementById('registerNameBtn').disabled = true;
+                }
+
+                const events = await contract.getPastEvents('FileCIDRegistered', {
+                    filter: {user: userAccount},
+                    fromBlock: 946610,
+                    toBlock: 'latest'
+                });
+                
+                const fileList = document.getElementById('fileItems');
+                fileList.innerHTML = events
+                    .map(event => `<li>${event.returnValues.fileName} - CID: ${event.returnValues.cid}</li>`)
+                    .join('');
+            } catch (error) {
+                console.error('Registration check error:', error);
+            }
+        }
+
+        function setupEventListeners() {
+            ethereum.on('accountsChanged', accounts => {
+                userAccount = accounts[0];
+                updateUI();
+            });
+
+            ethereum.on('chainChanged', chainId => {
+                window.location.reload();
+            });
+        }
+
+        function shortenAddress(address) {
+            return address ? `${address.slice(0,6)}...${address.slice(-4)}` : '';
+        }
+
+        function logTransaction(message) {
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            document.getElementById('txLog').prepend(logEntry);
+        }
+
+        function logError(error) {
+            console.error(error);
+            const errorEntry = document.createElement('div');
+            errorEntry.style.color = '#ff4444';
+            errorEntry.textContent = `[ERROR] ${error.message}`;
+            document.getElementById('txLog').prepend(errorEntry);
+        }
+
+        document.getElementById('connectBtn').addEventListener('click', init);
+    </script>
+</body>
+</html>

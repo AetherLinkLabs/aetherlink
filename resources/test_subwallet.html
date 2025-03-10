@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SubWallet EVM Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .account {
+            font-family: monospace;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>SubWallet EVM Test</h1>
+    
+    <div class="container">
+        <h2>Wallet Connection</h2>
+        <div>
+            <button id="connectBtn">Connect SubWallet</button>
+            <button id="disconnectBtn" disabled>Disconnect</button>
+        </div>
+        <div id="accountInfo"></div>
+    </div>
+
+    <div class="container">
+        <h2>Network Information</h2>
+        <div id="networkInfo"></div>
+    </div>
+
+    <div class="container">
+        <h2>Contract Interaction</h2>
+        <p>Contract Address: <span id="contractAddress"></span></p>
+        <div>
+            <button id="readBtn" disabled>Read Contract (owner)</button>
+            <button id="writeBtn" disabled>Write Contract (registerFile)</button>
+        </div>
+        <div id="contractResult"></div>
+    </div>
+
+    <div class="container">
+        <h2>Console Output</h2>
+        <pre id="console"></pre>
+    </div>
+
+    <script>
+        // Contract configuration
+        const CONTRACT_ADDRESS = '0xbdF673bd60232917Ce960AD268a8bF6441CeFDdD'; // Replace with your contract address
+        const CONTRACT_ABI = [
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [{"internalType": "address","name": "","type": "address"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {"internalType": "bytes32","name": "fileHash","type": "bytes32"},
+                    {"internalType": "string","name": "fileName","type": "string"},
+                    {"internalType": "uint256","name": "timestamp","type": "uint256"}
+                ],
+                "name": "registerFile",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        // Global variables
+        let web3;
+        let contract;
+        let userAccount;
+
+        // Helper functions
+        function log(message) {
+            const console = document.getElementById('console');
+            console.innerHTML += message + '\n';
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function showStatus(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${isError ? 'error' : 'success'}">${message}</div>`;
+        }
+
+        // Connect wallet
+        async function connectWallet() {
+            try {
+                const subwalletProvider = window.injectedWeb3['subwallet-js'];
+                if (!subwalletProvider) {
+                    throw new Error('SubWallet not found! Please install SubWallet extension.');
+                }
+
+                log('Connecting to SubWallet...');
+                const extension = await subwalletProvider.enable();
+                log('SubWallet extension:', extension);
+                
+                const accounts = await extension.accounts.get();
+                if (!accounts || accounts.length === 0) {
+                    throw new Error('No accounts found!');
+                }
+
+                userAccount = accounts[0].address;
+                log('Connected account:', userAccount);
+
+                // Get network info using extension API
+                const network = await extension.network.get();
+                log('Network:', network);
+                
+                if (!network) {
+                    throw new Error('Failed to get network information');
+                }
+
+                // Initialize Web3 with the network endpoint
+                web3 = new Web3(network.provider);
+                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+
+                // Update UI
+                document.getElementById('connectBtn').disabled = true;
+                document.getElementById('disconnectBtn').disabled = false;
+                document.getElementById('readBtn').disabled = false;
+                document.getElementById('writeBtn').disabled = false;
+                document.getElementById('accountInfo').innerHTML = `
+                    <p>Connected Account: <span class="account">${userAccount}</span></p>
+                `;
+                document.getElementById('contractAddress').textContent = CONTRACT_ADDRESS;
+                document.getElementById('networkInfo').innerHTML = `
+                    <p>Network: ${network.name}</p>
+                    <p>Chain ID: ${network.chainId}</p>
+                `;
+
+                log('Successfully connected to SubWallet');
+
+                // Set up event listeners
+                extension.accounts.subscribe((accounts) => {
+                    if (!accounts || accounts.length === 0) {
+                        disconnectWallet();
+                    } else {
+                        userAccount = accounts[0].address;
+                        document.getElementById('accountInfo').innerHTML = `
+                            <p>Connected Account: <span class="account">${userAccount}</span></p>
+                        `;
+                    }
+                });
+
+                extension.network.subscribe((network) => {
+                    if (network) {
+                        log('Network changed:', network);
+                        window.location.reload();
+                    }
+                });
+            } catch (error) {
+                log('Error: ' + error.message);
+                showStatus('accountInfo', error.message, true);
+            }
+        }
+
+        // Disconnect wallet
+        function disconnectWallet() {
+            web3 = null;
+            contract = null;
+            userAccount = null;
+
+            // Update UI
+            document.getElementById('connectBtn').disabled = false;
+            document.getElementById('disconnectBtn').disabled = true;
+            document.getElementById('readBtn').disabled = true;
+            document.getElementById('writeBtn').disabled = true;
+            document.getElementById('accountInfo').innerHTML = '';
+            document.getElementById('networkInfo').innerHTML = '';
+            document.getElementById('contractResult').innerHTML = '';
+
+            log('Disconnected from wallet');
+        }
+
+        // Read contract
+        async function readContract() {
+            try {
+                log('Reading contract owner...');
+                const owner = await contract.methods.owner().call();
+                log('Contract owner: ' + owner);
+                showStatus('contractResult', 'Contract owner: ' + owner);
+            } catch (error) {
+                log('Error: ' + error.message);
+                showStatus('contractResult', error.message, true);
+            }
+        }
+
+        // Write contract
+        async function writeContract() {
+            try {
+                log('Writing to contract...');
+                const fileHash = '0x' + Array(64).fill('0').join('');
+                const fileName = 'test.txt';
+                const timestamp = Math.floor(Date.now() / 1000);
+
+                log(`Parameters:
+- File Hash: ${fileHash}
+- File Name: ${fileName}
+- Timestamp: ${timestamp}`);
+
+                // Get the transaction parameters
+                const data = contract.methods.registerFile(fileHash, fileName, timestamp).encodeABI();
+                const tx = {
+                    from: userAccount,
+                    to: CONTRACT_ADDRESS,
+                    data: data,
+                    gas: '0x30d40' // 200000 in hex
+                };
+
+                // Send transaction using SubWallet's signer
+                const extension = window.injectedWeb3['subwallet-js'];
+                const signer = await extension.enable();
+                const txHash = await signer.signer.signAndSendTransaction(tx);
+
+                log('Transaction sent: ' + txHash);
+                showStatus('contractResult', 'Transaction sent: ' + txHash);
+            } catch (error) {
+                log('Error: ' + error.message);
+                showStatus('contractResult', error.message, true);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('connectBtn').onclick = connectWallet;
+        document.getElementById('disconnectBtn').onclick = disconnectWallet;
+        document.getElementById('readBtn').onclick = readContract;
+        document.getElementById('writeBtn').onclick = writeContract;
+    </script>
+</body>
+</html>
